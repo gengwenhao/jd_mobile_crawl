@@ -44,19 +44,25 @@ def crawl(writer, page=1):
 
     for item in items:
         item = AttrDict(item)
+
         row = (
             item.Content['warename'],
+            ''.join((IMG_URL_HOST + item.Content['imageurl'])),
+            item.Content['author'],
             item.dredisprice,
             item.commentcount,
             item.good,
+            item.shop_name,
+
         )
+
         writer.writerow(row)
 
 
 def run_crawl(max_page=MAX_PAGE, thread_max=5):
     with open(RESULT_SAVE_PATH, 'wt', newline='') as fp:
         writer = csv.writer(fp)
-        writer.writerow(('标题', '价格', '评论数', '好评率'))
+        writer.writerow(('标题', '封面图片地址', '作者', '价格', '评论数', '好评率', '商店名'))
         pool = ThreadPool(thread_max)
         pool.starmap(crawl, [(writer, page) for page in range(1, max_page + 1)])
     pool.close()
